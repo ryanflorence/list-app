@@ -105,6 +105,7 @@ body {
 }
 
 .icon {
+  font-size: 1px; /* gets rid of tall box in outline/screenreader */
   float: left;
   margin-right: 8px;
   margin-top: 3px;
@@ -243,6 +244,7 @@ function toggleItem(item) {
     item.classList.add('checked');
     checkbox.setAttribute('aria-checked', 'true');
   }
+  checkbox.focus();
 }
 
 var clickListener = (function() {
