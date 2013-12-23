@@ -3,8 +3,140 @@
 <head>
 <meta charset="utf-8">
 <title>list</title>
+<script>startTime = Date.now();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  color: rgb(73, 64, 58);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  background: rgb(73, 64, 58);
+  padding: 0;
+  margin: 0;
+}
+
+#list {
+  outline: none;
+  list-style-type: none;
+  margin: 0;
+  background: #fff;
+  padding: 0px;
+  font-size: 18px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+#go {
+  width: 100%;
+  height: 40px;
+  border: none;
+  background: rgb(151, 193, 81);
+  color: #fff;
+  font-family: inherit;
+  font-size: 20px;
+  margin: 0;
+  margin-bottom: 50px;
+  border-radius: 3px;
+}
+
+#go svg {
+  fill: #fff;
+}
+
+#input {
+  padding: 4px;
+  width: 100%;
+  border: none;
+  margin: 0;
+  height: 150px;
+  box-sizing: border-box;
+}
+
+#input-form {
+  padding: 20px;
+  height: 50%;
+}
+
+.item .checked {
+  display: none;
+}
+
+.item.checked .unchecked {
+  display: none;
+}
+
+.item.checked .checked {
+  display: inline;
+}
+
+.item {
+  cursor: default;
+  clear: both;
+  padding: 10px;
+  border-bottom: 1px solid rgb(205, 202, 197);
+  border-top: 1px solid rgb(205, 202, 197);
+  margin-top: -1px;
+}
+
+.item.checked {
+  color: rgba(73, 64, 58, 0.25);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  float: left;
+  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.icon:focus {
+  outline: none;
+}
+
+.icon:focus svg {
+  fill: rgb(222, 64, 64) !important;
+}
+
+.item-name {
+  display: table-cell;
+  vertical-align: top;
+  width: 10000px;
+}
+
+.item svg {
+  fill: inherit;
+}
+
+.item.checked svg {
+  fill: rgb(13, 138, 176);
+}
+
+#bottom-filler {
+  height: 100px;
+}
+</style>
 </head>
 <body>
 
@@ -155,135 +287,8 @@ go.addEventListener('click', renderList, false);
 maybeStubData();
 </script>
 
-<style>
-* {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-}
 
-textarea {
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  user-select: text;
-}
-
-html {
-  height: 100%;
-}
-
-body {
-  height: 100%;
-  color: rgb(73, 64, 58);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  background: rgb(73, 64, 58);
-  padding: 0;
-  margin: 0;
-}
-
-#list {
-  outline: none;
-  list-style-type: none;
-  margin: 0;
-  background: #fff;
-  padding: 0px;
-  font-size: 18px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-}
-
-#go {
-  width: 100%;
-  height: 40px;
-  border: none;
-  background: rgb(151, 193, 81);
-  color: #fff;
-  font-family: inherit;
-  font-size: 20px;
-  margin: 0;
-  margin-bottom: 50px;
-  border-radius: 3px;
-}
-
-#go svg {
-  fill: #fff;
-}
-
-#input {
-  padding: 4px;
-  width: 100%;
-  border: none;
-  margin: 0;
-  height: 150px;
-  box-sizing: border-box;
-}
-
-#input-form {
-  padding: 20px;
-  height: 50%;
-}
-
-.item .checked {
-  display: none;
-}
-
-.item.checked .unchecked {
-  display: none;
-}
-
-.item.checked .checked {
-  display: inline;
-}
-
-.item {
-  cursor: default;
-  clear: both;
-  padding: 10px;
-  border-bottom: 1px solid rgb(205, 202, 197);
-  border-top: 1px solid rgb(205, 202, 197);
-  margin-top: -1px;
-}
-
-.item.checked {
-  color: rgba(73, 64, 58, 0.25);
-}
-
-.item:last-child {
-  border-bottom: none;
-}
-
-.icon {
-  float: left;
-  margin-right: 8px;
-  margin-top: 3px;
-}
-
-.icon:focus {
-  outline: none;
-}
-
-.icon:focus svg {
-  fill: rgb(222, 64, 64) !important;
-}
-
-.item-name {
-  display: table-cell;
-  vertical-align: top;
-  width: 10000px;
-}
-
-.item svg {
-  fill: inherit;
-}
-
-.item.checked svg {
-  fill: rgb(13, 138, 176);
-}
-
-#bottom-filler {
-  height: 100px;
-}
-</style>
+<script>
+alert(Date.now() - startTime);
+</script>
 
