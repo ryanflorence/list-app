@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>list</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+</head>
+<body>
+
+<ul id="list" tabindex=-1></ul>
+
+<div id="input-form">
+  <textarea id="input" aria-label="enter a list of things"></textarea>
+  <button id="go" aria-label="create list">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+      <path d="M23.25 9h-8.25v-8.25c0-0.414-0.336-0.75-0.75-0.75h-4.5c-0.414 0-0.75 0.336-0.75 0.75v8.25h-8.25c-0.414 0-0.75 0.336-0.75 0.75v4.5c0 0.414 0.336 0.75 0.75 0.75h8.25v8.25c0 0.414 0.336 0.75 0.75 0.75h4.5c0.414 0 0.75-0.336 0.75-0.75v-8.25h8.25c0.414 0 0.75-0.336 0.75-0.75v-4.5c0-0.414-0.336-0.75-0.75-0.75z" />
+    </svg>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="24" viewBox="0 0 24 24">
+      <path d="M0 0h6v6h-6zM9 1.5h15v3h-15zM0 9h6v6h-6zM9 10.5h15v3h-15zM0 18h6v6h-6zM9 19.5h15v3h-15z" />
+    </svg>
+  </button>
+</div>
+
+<div id="bottom-filler"></div>
+
+<ul style="display: none">
+  <li id="item-template" class="item">
+    <div class="icon" tabindex=0 role="checkbox" aria-checked="false" aria-labelledby="">
+      <svg class="unchecked" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
+        <path d="M0 0v18h18v-18h-18zM16.875 16.875h-15.75v-15.75h15.75v15.75z"/>
+      </svg>
+      <svg class="checked" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18">
+        <path d="M0 0v18h18v-18h-18zM16.875 16.875h-15.75v-15.75h15.75v15.75zM13.5 3.938l-5.625 5.625-3.375-3.375-2.25 2.25 5.625 5.625 7.875-7.875-2.25-2.25z" />
+      </svg>
+    </div>
+    <div class="item-name"></div>
+  </li>
+</ul>
+
+<script>
+var touch = 'ontouchstart' in window;
+var go = document.getElementById('go');
+var input = document.getElementById('input');
+var list = document.getElementById('list');
+var itemTemplate = document.getElementById('item-template');
+
+function renderList(event) {
+  emptyList();
+  parseInputValue().forEach(renderItem);
+  input.value = '';
+  if (wasKeyboardEvent(event)) {
+    (list.querySelector('.icon') || list).focus();
+  } else {
+    list.focus();
+  }
+};
+
+function wasKeyboardEvent(event) {
+  if (!event) {
+    return false;
+  }
+  if (event.clientX > 0 || event.clientY > 0) {
+    return false;
+  }
+  if (event.touches && (event.touches[0].clientX > 0 || event.touches[0].clientY > 0)) {
+    return false;
+  }
+  return true;
+}
+
+function emptyList() {
+  list.innerHTML = '';
+}
+
+function parseInputValue() {
+  return input.value.split('\n').filter(function(str) {
+    return str.trim() != '';
+  });
+}
+
+function renderItem(text) {
+  renderItem.gid = renderItem.gid || 0;
+  var id = 'item-'+(++renderItem.gid);
+  var item = itemTemplate.cloneNode(true);
+  var name = item.querySelector('.item-name')
+  name.textContent = text;
+  name.setAttribute('id', id);
+  item.querySelector('.icon').setAttribute('aria-labelledby', id);
+  clickListener(item, function() { toggleItem(item) });
+  addKeyboardSupport(item);
+  list.appendChild(item);
+}
+
+function addKeyboardSupport(item) {
+  var checkbox = item.querySelector('.icon');
+  checkbox.addEventListener('keydown', function(event) {
+    if (event.keyCode == 32) {
+      event.preventDefault();
+      toggleItem(item);
+    }
+  }, false);
+}
+
+function toggleItem(item) {
+  var checkbox = item.querySelector('.icon');
+  if (item.classList.contains('checked')) {
+    item.classList.remove('checked');
+    checkbox.setAttribute('aria-checked', 'false');
+  } else {
+    item.classList.add('checked');
+    checkbox.setAttribute('aria-checked', 'true');
+  }
+}
+
+var clickListener = (function() {
+  function tap(el, handler) {
+    var moved = false;
+    el.addEventListener('touchmove', function() {
+      moved = true;
+    });
+    el.addEventListener('touchend', function(event) {
+      if (!moved) {
+        handler.call(el, event);
+      }
+      moved = false;
+    });
+  }
+
+  function click(el, handler) {
+    el.addEventListener('click', handler, false);
+  }
+
+  return touch ? tap : click;
+})();
+
+function maybeStubData() {
+  var host = location.hostname;
+  if (host !== 'localhost' && host !== '192.168.0.20') { return; }
+  input.value =  "1 pound lean ground beef\n"+
+                 "eggs\n"+
+                 "bottled water\n"+
+                 "croutons\n"+
+                 "2 bags of yellow onion\n"+
+                 "1 (8 ounce) can jellied cranberry sauce with the weird packaging\n"+
+                 "can of chili sauce\n"+
+                 "bag of brown sugar\n"+
+                 "lemon juice";
+  renderList();
+}
+
+/*****************************************************************************/
+go.addEventListener('click', renderList, false);
+maybeStubData();
+</script>
+
+<style>
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  color: rgb(73, 64, 58);
+  font-family: "Helvetica Neue", Helvetica;
+  font-weight: 300;
+  background: rgb(73, 64, 58);
+  padding: 0;
+  margin: 0;
+}
+
+#list {
+  outline: none;
+  list-style-type: none;
+  margin: 0;
+  background: #f7f5f2;
+  padding: 0px;
+  font-size: 18px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+#go {
+  width: 100%;
+  height: 40px;
+  border: none;
+  background: rgb(151, 193, 81);
+  color: rgb(247, 245, 242);
+  font-family: inherit;
+  font-size: 20px;
+  margin: 0;
+  margin-bottom: 50px;
+  border-radius: 3px;
+}
+
+#go svg {
+  fill: rgb(247, 245, 242);
+}
+
+#input {
+  padding: 4px;
+  width: 100%;
+  border: none;
+  margin: 0;
+  height: 150px;
+  box-sizing: border-box;
+}
+
+#input-form {
+  padding: 20px;
+  height: 50%;
+}
+
+.item .checked {
+  display: none;
+}
+
+.item.checked .unchecked {
+  display: none;
+}
+
+.item.checked .checked {
+  display: inline;
+}
+
+.item {
+  cursor: default;
+  clear: both;
+  padding: 10px;
+  border-bottom: 1px solid rgb(205, 202, 197);
+  border-top: 1px solid rgb(205, 202, 197);
+  margin-top: -1px;
+}
+
+.item.checked {
+  color: rgba(73, 64, 58, 0.25);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  float: left;
+  margin-right: 8px;
+  margin-top: 3px;
+}
+
+.icon:focus {
+  outline: none;
+}
+
+.icon:focus svg {
+  fill: rgb(222, 64, 64) !important;
+}
+
+.item-name {
+  display: table-cell;
+  vertical-align: top;
+  width: 10000px;
+}
+
+.item svg {
+  fill: inherit;
+}
+
+.item.checked svg {
+  fill: rgb(13, 138, 176);
+}
+
+#bottom-filler {
+  height: 100px;
+}
+</style>
+
