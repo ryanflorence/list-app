@@ -283,8 +283,20 @@ function maybeStubData() {
   renderList();
 }
 
+function nextItem(event) {
+  if (event.keyCode !== 78) { return; }
+  var next = document.querySelector('.item:not(.checked) .icon');
+  next && next.focus();
+}
+
+function stopPropagation(event) {
+  event.stopPropagation();
+}
+
 /*****************************************************************************/
 go.addEventListener('click', renderList, false);
+window.addEventListener('keydown', nextItem, false);
+input.addEventListener('keydown', stopPropagation, false);
 maybeStubData();
 </script>
 
