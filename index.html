@@ -206,10 +206,20 @@ function renderList(event, options) {
   }
   document.body.classList.add('rendered');
   window.scrollTo(0, 0);
+  saveToStorage();
 };
 
 function appendItems(event) {
   renderList(event, { append: true });
+}
+
+function loadFromStorage() {
+  var storage = JSON.parse(localStorage.getItem('list'));
+  if (storage) {
+    input.value = storage.map((item) => `${item.checked ? 'checked:' : ''}${item.text}`).join("\n");
+    renderList();
+    return true;
+  }
 }
 
 function wasKeyboardEvent(event) {
@@ -227,15 +237,22 @@ function wasKeyboardEvent(event) {
 
 function emptyList() {
   list.innerHTML = '';
+  localStorage.setItem('list', '[]');
 }
 
 function parseInputValue() {
   return input.value.split('\n').filter(function(str) {
     return str.trim() != '';
+  }).map((text) => {
+    var checked = text.startsWith('checked:');
+    return {
+      text: checked ? text.substr(8) : text,
+      checked,
+    };
   });
 }
 
-function renderItem(text) {
+function renderItem({ text, checked }) {
   renderItem.gid = renderItem.gid || 0;
   var id = 'item-'+(++renderItem.gid);
   var item = itemTemplate.cloneNode(true);
@@ -243,6 +260,9 @@ function renderItem(text) {
   name.textContent = text;
   name.setAttribute('id', id);
   item.querySelector('.icon').setAttribute('aria-labelledby', id);
+  if (checked) {
+    toggleItem(item);
+  }
   clickListener(item, function() { toggleItem(item) });
   addKeyboardSupport(item);
   list.appendChild(item);
@@ -268,6 +288,16 @@ function toggleItem(item) {
     checkbox.setAttribute('aria-checked', 'true');
   }
   checkbox.focus();
+  saveToStorage();
+}
+
+function saveToStorage() {
+  var items = Array.from(list.childNodes);
+  var storage = items.map((item) => ({
+    text: item.innerText,
+    checked: item.classList.contains('checked'),
+  }));
+  localStorage.setItem('list', JSON.stringify(storage));
 }
 
 var clickListener = (function() {
@@ -294,9 +324,9 @@ var clickListener = (function() {
 function maybeStubData() {
   var host = location.hostname;
   if (host !== 'localhost' && host !== '192.168.0.20') { return; }
-  input.value =  "1 pound lean ground beef\n"+
+  input.value =  "checked:1 pound lean ground beef\n"+
                  "eggs\n"+
-                 "bottled water\n"+
+                 "checked:bottled water\n"+
                  "croutons\n"+
                  "2 bags of yellow onion\n"+
                  "1 (8 ounce) can jellied cranberry sauce with the weird packaging\n"+
@@ -321,6 +351,8 @@ go.addEventListener('click', renderList, false);
 append.addEventListener('click', appendItems, false);
 window.addEventListener('keydown', nextItem, false);
 input.addEventListener('keydown', stopPropagation, false);
-maybeStubData();
+if (!loadFromStorage()) {
+  maybeStubData();
+}
 </script>
 
